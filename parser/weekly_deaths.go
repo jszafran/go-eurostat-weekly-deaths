@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"encoding/csv"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -32,8 +33,13 @@ func parseMetaData(l string) MetaData {
 		Sex:     spl[1],
 		Country: spl[3],
 	}
-
 }
+
+func parseWeeklyDeaths(recs []string) []WeeklyDeaths {
+	var wd []WeeklyDeaths
+	return wd
+}
+
 func weekColsMap(rcs []string) map[int]string {
 	m := make(map[int]string)
 
@@ -70,10 +76,24 @@ func Parse(path string) ([]Record, error) {
 	}
 
 	hdr, err := r.Read()
+	fmt.Println(hdr[0])
 	if err != nil {
 		return recs, err
 	}
-	wcm := weekColsMap(hdr)
-	fmt.Println(wcm)
+	//_ := weekColsMap(hdr)
+
+	for {
+		rec, err := r.Read()
+		if err != nil {
+			if err == io.EOF {
+				err = nil
+				fmt.Println("End of file reached!")
+				break
+			}
+		}
+		meta := parseMetaData(rec[0])
+		fmt.Printf("%+v\n", meta)
+	}
+
 	return recs, err
 }
