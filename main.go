@@ -1,11 +1,10 @@
 package main
 
 import (
-	"eurostat-weekly-deaths/db"
+	edb "eurostat-weekly-deaths/db"
 	"eurostat-weekly-deaths/parser"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"time"
 )
@@ -20,27 +19,16 @@ func main() {
 	)
 	flag.Parse()
 
-	t1 := time.Now()
 	it, err := parser.NewEurostatWeeklyDeathsData(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	rcs := make([]parser.Record, 0)
-	for {
-		r, err := it.Next()
-		rcs = append(rcs, r)
-		if err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				log.Fatal(err)
-			}
-		}
-	}
-
-	fmt.Printf("Parsed %d records in %s.", len(rcs), time.Since(t1))
-
-	db := db.DB()
+	db := edb.DB()
 	fmt.Printf("DB created: %+v", db)
+	
+	t1 := time.Now()
+	edb.BatchInsertWeeklyDeaths(it, db)
+	fmt.Printf("Inserted records. Time taken: %s", time.Since(t1))
+
 }

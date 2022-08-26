@@ -1,6 +1,7 @@
 package db
 
 import (
+	"eurostat-weekly-deaths/parser"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,7 +28,7 @@ func DB() *gorm.DB {
 		os.Getenv("POSTGRES_DB"),
 		"5432",
 	)
-	fmt.Println(dsn)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -35,4 +36,22 @@ func DB() *gorm.DB {
 	db.Exec("DROP TABLE IF EXISTS weekly_deaths;")
 	db.AutoMigrate(&WeeklyDeaths{})
 	return db
+}
+
+func BatchInsertWeeklyDeaths(it *parser.EurostatWeeklyDeathsData, db *gorm.DB) error {
+	for i := 0; i < 10000; i++ {
+		wd, err := it.Next()
+		if err != nil {
+			return err
+		}
+		db.Create(&WeeklyDeaths{
+			Age:     wd.Age,
+			Sex:     wd.Sex,
+			Country: wd.Country,
+			Value:   wd.WeeklyDeaths,
+			Week:    wd.Week,
+			Year:    wd.Year,
+		})
+	}
+	return nil
 }
