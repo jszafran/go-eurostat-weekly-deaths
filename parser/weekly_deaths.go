@@ -178,3 +178,87 @@ func Parse(path string) ([]Record, error) {
 
 	return recs, err
 }
+
+type SourceIterator struct {
+	reader       *csv.Reader
+	row          []string
+	rowPos       int
+	demographics *Demographics
+	wim          map[int]WeekInfo
+	lastRow      bool
+}
+
+func (si *SourceIterator) Next() (Record, error) {
+	var rec Record
+	// set demographics and row
+	if si.rowPos == 0 {
+		row, err := si.reader.Read()
+		if err != nil {
+			if err == io.EOF {
+				return rec, io.EOF
+			} else {
+				return rec, err
+			}
+		}
+		si.row = row
+		si.rowPos++
+		dmg := parseDemographics(si.row[0])
+		si.demographics = &dmg
+	}
+
+	// parse values from row
+	v, err := parseWeeklyDeathsValue(si.row[si.rowPos])
+	if err != nil {
+		return rec, err
+	}
+
+	wi, exists := si.wim[si.rowPos]
+	if !exists {
+		return rec, fmt.Errorf("couldn't find a week info for position %d", si.rowPos)
+	}
+
+	// TODO: prepare for next row
+	if si.rowPos+1 == len(si.row) && si.lastRow {
+		return rec, io.EOF
+	} else if si.rowPos+1 == len(si.row) {
+		si.rowPos = 0
+	} else {
+		si.rowPos++
+	}
+
+	return Record{
+		Age:          si.demographics.Age,
+		Sex:          si.demographics.Sex,
+		Country:      si.demographics.Country,
+		WeeklyDeaths: v,
+		Year:         wi.Year,
+		Week:         wi.Week,
+	}, nil
+}
+
+func NewEurostatIterator(path string) (*SourceIterator, error) {
+	var si SourceIterator
+	r, err := readGzippedTSV(path)
+	if err != nil {
+		return &si, err
+	}
+
+	hdr, err := r.Read()
+	if err != nil {
+		return &si, err
+	}
+
+	wim, err := weekInfoColsMap(hdr)
+	if err != nil {
+		return &si, err
+	}
+
+	return &SourceIterator{
+		reader:       r,
+		row:          nil,
+		rowPos:       0,
+		demographics: nil,
+		wim:          wim,
+	}, nil
+
+}
