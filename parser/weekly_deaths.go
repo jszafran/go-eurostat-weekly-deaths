@@ -136,50 +136,7 @@ func readGzippedTSV(path string) (*csv.Reader, error) {
 	return r, nil
 }
 
-func Parse(path string) ([]Record, error) {
-	var recs []Record
-	r, err := readGzippedTSV(path)
-	if err != nil {
-		return recs, err
-	}
-
-	hdr, err := r.Read()
-	if err != nil {
-		return recs, err
-	}
-	wim, err := weekInfoColsMap(hdr)
-
-	for {
-		rec, err := r.Read()
-		if err != nil {
-			if err == io.EOF {
-				err = nil
-				break
-			}
-		}
-		dmg := parseDemographics(rec[0])
-		vals, err := parseWeeklyDeathsLine(rec[1:])
-		if err != nil {
-			return recs, err
-		}
-
-		for i, v := range vals {
-			wi := wim[i+1]
-			recs = append(recs, Record{
-				Age:          dmg.Age,
-				Sex:          dmg.Sex,
-				Country:      dmg.Country,
-				WeeklyDeaths: v,
-				Year:         wi.Year,
-				Week:         wi.Week,
-			})
-		}
-	}
-
-	return recs, err
-}
-
-type SourceIterator struct {
+type EurostatWeeklyDeathsData struct {
 	reader       *csv.Reader
 	row          []string
 	rowPos       int
@@ -188,11 +145,11 @@ type SourceIterator struct {
 	lastRow      bool
 }
 
-func (si *SourceIterator) Next() (Record, error) {
+func (e *EurostatWeeklyDeathsData) Next() (Record, error) {
 	var rec Record
 	// set demographics and row
-	if si.rowPos == 0 {
-		row, err := si.reader.Read()
+	if e.rowPos == 0 {
+		row, err := e.reader.Read()
 		if err != nil {
 			if err == io.EOF {
 				return rec, io.EOF
@@ -200,60 +157,59 @@ func (si *SourceIterator) Next() (Record, error) {
 				return rec, err
 			}
 		}
-		si.row = row
-		si.rowPos++
-		dmg := parseDemographics(si.row[0])
-		si.demographics = &dmg
+		e.row = row
+		e.rowPos++
+		dmg := parseDemographics(e.row[0])
+		e.demographics = &dmg
 	}
 
 	// parse values from row
-	v, err := parseWeeklyDeathsValue(si.row[si.rowPos])
+	v, err := parseWeeklyDeathsValue(e.row[e.rowPos])
 	if err != nil {
 		return rec, err
 	}
 
-	wi, exists := si.wim[si.rowPos]
+	wi, exists := e.wim[e.rowPos]
 	if !exists {
-		return rec, fmt.Errorf("couldn't find a week info for position %d", si.rowPos)
+		return rec, fmt.Errorf("couldn't find a week info for position %d", e.rowPos)
 	}
 
-	// TODO: prepare for next row
-	if si.rowPos+1 == len(si.row) && si.lastRow {
+	if e.rowPos+1 == len(e.row) && e.lastRow {
 		return rec, io.EOF
-	} else if si.rowPos+1 == len(si.row) {
-		si.rowPos = 0
+	} else if e.rowPos+1 == len(e.row) {
+		e.rowPos = 0
 	} else {
-		si.rowPos++
+		e.rowPos++
 	}
 
 	return Record{
-		Age:          si.demographics.Age,
-		Sex:          si.demographics.Sex,
-		Country:      si.demographics.Country,
+		Age:          e.demographics.Age,
+		Sex:          e.demographics.Sex,
+		Country:      e.demographics.Country,
 		WeeklyDeaths: v,
 		Year:         wi.Year,
 		Week:         wi.Week,
 	}, nil
 }
 
-func NewEurostatIterator(path string) (*SourceIterator, error) {
-	var si SourceIterator
+func NewEurostatWeeklyDeathsData(path string) (*EurostatWeeklyDeathsData, error) {
+	var ed EurostatWeeklyDeathsData
 	r, err := readGzippedTSV(path)
 	if err != nil {
-		return &si, err
+		return &ed, err
 	}
 
 	hdr, err := r.Read()
 	if err != nil {
-		return &si, err
+		return &ed, err
 	}
 
 	wim, err := weekInfoColsMap(hdr)
 	if err != nil {
-		return &si, err
+		return &ed, err
 	}
 
-	return &SourceIterator{
+	return &EurostatWeeklyDeathsData{
 		reader:       r,
 		row:          nil,
 		rowPos:       0,

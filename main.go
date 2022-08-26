@@ -2,17 +2,41 @@ package main
 
 import (
 	"eurostat-weekly-deaths/parser"
+	"flag"
 	"fmt"
+	"io"
 	"log"
 	"time"
 )
 
 func main() {
-	st := time.Now()
-	r, err := parser.Parse("data/weekly_deaths.tsv")
+	var path string
+	flag.StringVar(
+		&path,
+		"eurostat_input",
+		"data/weekly_deaths.tsv.gz",
+		"Path to gzip archive with Eurostat data.",
+	)
+	flag.Parse()
+
+	t1 := time.Now()
+	it, err := parser.NewEurostatWeeklyDeathsData(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	tt := time.Since(st)
-	fmt.Printf("Parsed %d records in %v.", len(r), tt)
+
+	rcs := make([]parser.Record, 0)
+	for {
+		r, err := it.Next()
+		rcs = append(rcs, r)
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	fmt.Printf("Parsed %d records in %s.", len(rcs), time.Since(t1))
 }
