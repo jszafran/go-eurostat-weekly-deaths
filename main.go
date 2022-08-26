@@ -1,6 +1,7 @@
 package main
 
 import (
+	"eurostat-weekly-deaths/db"
 	"eurostat-weekly-deaths/parser"
 	"flag"
 	"fmt"
@@ -39,4 +40,7 @@ func main() {
 	}
 
 	fmt.Printf("Parsed %d records in %s.", len(rcs), time.Since(t1))
+
+	db := db.DB()
+	fmt.Printf("DB created: %+v", db)
 }

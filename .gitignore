@@ -122,3 +122,4 @@ data/
 sandbox/
 
 .DS_Store
+.env
