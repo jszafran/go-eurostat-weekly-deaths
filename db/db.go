@@ -13,15 +13,16 @@ import (
 
 type WeeklyDeaths struct {
 	gorm.Model
-	Age     string
-	Gender  string
-	Country string
+	Age     string `gorm:"index"`
+	Gender  string `gorm:"index"`
+	Country string `gorm:"index"`
 	Value   int
-	Week    int
-	Year    int
+	Week    int `gorm:"index"`
+	Year    int `gorm:"index"`
 }
 
-func DB() *gorm.DB {
+func DB() (*gorm.DB, error) {
+	var db *gorm.DB
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s",
 		os.Getenv("POSTGRES_HOST"),
@@ -33,14 +34,31 @@ func DB() *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal(err)
+		return db, err
 	}
-	db.Exec("DROP TABLE IF EXISTS weekly_deaths;")
-	db.AutoMigrate(&WeeklyDeaths{})
-	return db
+
+	return db, nil
 }
 
-func BatchInsertWeeklyDeaths(it *parser.EurostatWeeklyDeathsData, db *gorm.DB) error {
+func LoadWeeklyDeathsData(path string) error {
+	db, err := DB()
+	if err != nil {
+		return err
+	}
+
+	log.Println("Recreating database structure... ")
+	db.Exec("DROP TABLE IF EXISTS weekly_deaths;")
+	db.AutoMigrate(&WeeklyDeaths{})
+	log.Print(" Done!")
+
+	log.Println("Parsing data.")
+	it, err := parser.NewEurostatWeeklyDeathsData(path)
+	if err != nil {
+		return err
+	}
+	log.Println("Parsing done.")
+
+	log.Println("Starting loading data to database.")
 	t1 := time.Now()
 	wd := make([]WeeklyDeaths, 0)
 	for {

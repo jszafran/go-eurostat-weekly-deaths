@@ -1,10 +1,8 @@
 package main
 
 import (
-	edb "eurostat-weekly-deaths/db"
-	"eurostat-weekly-deaths/parser"
+	appdb "eurostat-weekly-deaths/db"
 	"flag"
-	"fmt"
 	"log"
 )
 
@@ -18,13 +16,8 @@ func main() {
 	)
 	flag.Parse()
 
-	it, err := parser.NewEurostatWeeklyDeathsData(path)
+	err := appdb.LoadWeeklyDeathsData(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	db := edb.DB()
-	fmt.Printf("DB created: %+v", db)
-
-	edb.BatchInsertWeeklyDeaths(it, db)
 }
