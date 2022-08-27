@@ -11,16 +11,6 @@ import (
 	"time"
 )
 
-type WeeklyDeaths struct {
-	gorm.Model
-	Age     string `gorm:"index"`
-	Gender  string `gorm:"index"`
-	Country string `gorm:"index"`
-	Value   int
-	Week    int `gorm:"index"`
-	Year    int `gorm:"index"`
-}
-
 func DB() (*gorm.DB, error) {
 	var db *gorm.DB
 	dsn := fmt.Sprintf(
