@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"io"
 	"log"
 	"os"
+	"time"
 )
 
 type WeeklyDeaths struct {
@@ -39,19 +41,26 @@ func DB() *gorm.DB {
 }
 
 func BatchInsertWeeklyDeaths(it *parser.EurostatWeeklyDeathsData, db *gorm.DB) error {
-	for i := 0; i < 10000; i++ {
-		wd, err := it.Next()
+	t1 := time.Now()
+	wd := make([]WeeklyDeaths, 0)
+	for {
+		r, err := it.Next()
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
 			return err
 		}
-		db.Create(&WeeklyDeaths{
-			Age:     wd.Age,
-			Sex:     wd.Sex,
-			Country: wd.Country,
-			Value:   wd.WeeklyDeaths,
-			Week:    wd.Week,
-			Year:    wd.Year,
+		wd = append(wd, WeeklyDeaths{
+			Age:     r.Age,
+			Sex:     r.Sex,
+			Country: r.Country,
+			Value:   r.WeeklyDeaths,
+			Week:    r.Week,
+			Year:    r.Year,
 		})
 	}
+	db.CreateInBatches(wd, 5000)
+	log.Printf("Inserted %d records in %s.\n", len(wd), time.Since(t1))
 	return nil
 }

@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"time"
 )
 
 func main() {
@@ -26,9 +25,6 @@ func main() {
 
 	db := edb.DB()
 	fmt.Printf("DB created: %+v", db)
-	
-	t1 := time.Now()
-	edb.BatchInsertWeeklyDeaths(it, db)
-	fmt.Printf("Inserted records. Time taken: %s", time.Since(t1))
 
+	edb.BatchInsertWeeklyDeaths(it, db)
 }
