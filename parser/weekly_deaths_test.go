@@ -11,7 +11,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 	testRecords := []Record{
 		{
 			Age:          "Y_LT5",
-			Sex:          "F",
+			Gender:       "F",
 			Country:      "PL",
 			WeeklyDeaths: 1,
 			Year:         2022,
@@ -19,7 +19,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "Y_LT5",
-			Sex:          "F",
+			Gender:       "F",
 			Country:      "PL",
 			WeeklyDeaths: 2,
 			Year:         2022,
@@ -27,7 +27,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "Y_LT5",
-			Sex:          "F",
+			Gender:       "F",
 			Country:      "PL",
 			WeeklyDeaths: -1,
 			Year:         2022,
@@ -35,7 +35,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "Y20-24",
-			Sex:          "M",
+			Gender:       "M",
 			Country:      "DE",
 			WeeklyDeaths: 100,
 			Year:         2022,
@@ -43,7 +43,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "Y20-24",
-			Sex:          "M",
+			Gender:       "M",
 			Country:      "DE",
 			WeeklyDeaths: 0,
 			Year:         2022,
@@ -51,7 +51,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "Y20-24",
-			Sex:          "M",
+			Gender:       "M",
 			Country:      "DE",
 			WeeklyDeaths: -1,
 			Year:         2022,
@@ -59,7 +59,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "TOTAL",
-			Sex:          "T",
+			Gender:       "T",
 			Country:      "FR",
 			WeeklyDeaths: -1,
 			Year:         2022,
@@ -67,7 +67,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "TOTAL",
-			Sex:          "T",
+			Gender:       "T",
 			Country:      "FR",
 			WeeklyDeaths: -1,
 			Year:         2022,
@@ -75,7 +75,7 @@ func TestEurostatWeeklyDeathsDataParser(t *testing.T) {
 		},
 		{
 			Age:          "TOTAL",
-			Sex:          "T",
+			Gender:       "T",
 			Country:      "FR",
 			WeeklyDeaths: -1,
 			Year:         2022,

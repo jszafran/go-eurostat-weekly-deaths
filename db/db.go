@@ -14,7 +14,7 @@ import (
 type WeeklyDeaths struct {
 	gorm.Model
 	Age     string
-	Sex     string
+	Gender  string
 	Country string
 	Value   int
 	Week    int
@@ -53,7 +53,7 @@ func BatchInsertWeeklyDeaths(it *parser.EurostatWeeklyDeathsData, db *gorm.DB) e
 		}
 		wd = append(wd, WeeklyDeaths{
 			Age:     r.Age,
-			Sex:     r.Sex,
+			Gender:  r.Gender,
 			Country: r.Country,
 			Value:   r.WeeklyDeaths,
 			Week:    r.Week,

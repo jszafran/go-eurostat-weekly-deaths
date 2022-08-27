@@ -12,7 +12,7 @@ import (
 
 type Record struct {
 	Age          string
-	Sex          string
+	Gender       string
 	Country      string
 	WeeklyDeaths int
 	Year         int
@@ -21,7 +21,7 @@ type Record struct {
 
 type Demographics struct {
 	Age     string
-	Sex     string
+	Gender  string
 	Country string
 }
 
@@ -38,7 +38,7 @@ func parseDemographics(l string) Demographics {
 	spl := strings.Split(l, ",")
 	return Demographics{
 		Age:     spl[0],
-		Sex:     spl[1],
+		Gender:  spl[1],
 		Country: spl[3],
 	}
 }
@@ -184,7 +184,7 @@ func (e *EurostatWeeklyDeathsData) Next() (Record, error) {
 
 	return Record{
 		Age:          e.demographics.Age,
-		Sex:          e.demographics.Sex,
+		Gender:       e.demographics.Gender,
 		Country:      e.demographics.Country,
 		WeeklyDeaths: v,
 		Year:         wi.Year,
