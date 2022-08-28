@@ -6,17 +6,11 @@ type EurostatRepository struct {
 	Db *gorm.DB
 }
 
-func (r *EurostatRepository) FetchCountryData(
-	country string,
-	age string,
-	gender string,
-	yearFrom int,
-	yearTo int,
-) []WeeklyDeaths {
-	filter := "country = ? and age = ? and gender = ? and year >= ? and year <= ?"
+func (r *EurostatRepository) FetchCountryData(p WeeklyDeathsQueryParams) []WeeklyDeaths {
+	filter := "country IN ? and age = ? and gender = ? and year >= ? and year <= ?"
 
 	var res []WeeklyDeaths
-	r.Db.Order("year, week").Where(filter, country, age, gender, yearFrom, yearTo).Find(&res)
+	r.Db.Order("year, week").Where(filter, p.Country, p.Age, p.Gender, p.YearFrom, p.YearTo).Find(&res)
 	return res
 }
 

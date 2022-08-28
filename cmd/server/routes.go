@@ -2,9 +2,9 @@ package main
 
 import (
 	"eurostat-weekly-deaths/database"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 type Env struct {
@@ -29,22 +29,15 @@ func (e *Env) ListWeeklyDeaths(c *gin.Context) {
 		return
 	}
 
-	country := c.Query("country")
-	age := c.Query("age")
-	gender := c.Query("gender")
-
-	yearFrom, err := strconv.Atoi(c.Query("yearFrom"))
+	var params database.WeeklyDeathsQueryParams
+	err := c.Bind(&params)
+	fmt.Printf("%+v\n", params)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
-	yearTo, err := strconv.Atoi(c.Query("yearTo"))
-	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-	}
-
-	res := e.repo.FetchCountryData(country, age, gender, yearFrom, yearTo)
+	res := e.repo.FetchCountryData(params)
 	c.JSON(http.StatusOK, res)
 }
 
