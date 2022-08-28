@@ -1,6 +1,17 @@
 package main
 
+import (
+	"eurostat-weekly-deaths/database"
+	"log"
+)
+
 func main() {
-	r := GetRouter()
-	r.Run("localhost:8080")
+	db, err := database.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	repo := database.EurostatRepository{Db: db}
+	r := GetRouter(&repo)
+	log.Fatal(r.Run("localhost:8080"))
 }

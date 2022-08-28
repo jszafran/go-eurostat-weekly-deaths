@@ -1,4 +1,4 @@
-package db
+package database
 
 func Countries() []Country {
 	return []Country{

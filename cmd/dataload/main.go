@@ -1,7 +1,7 @@
 package main
 
 import (
-	appdb "eurostat-weekly-deaths/db"
+	appdb "eurostat-weekly-deaths/database"
 	"flag"
 	"log"
 )
