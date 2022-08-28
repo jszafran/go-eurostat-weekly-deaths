@@ -1,6 +1,7 @@
 package database
 
 import (
+	"eurostat-weekly-deaths/models"
 	"eurostat-weekly-deaths/parser"
 	"fmt"
 	"gorm.io/driver/postgres"
@@ -38,7 +39,7 @@ func LoadWeeklyDeathsData(path string) error {
 
 	log.Println("Recreating database structure... ")
 	db.Exec("DROP TABLE IF EXISTS weekly_deaths;")
-	db.AutoMigrate(&WeeklyDeaths{})
+	db.AutoMigrate(&models.WeeklyDeaths{})
 	log.Print(" Done!")
 
 	log.Println("Parsing data.")
@@ -50,7 +51,7 @@ func LoadWeeklyDeathsData(path string) error {
 
 	log.Println("Starting loading data to database.")
 	t1 := time.Now()
-	wd := make([]WeeklyDeaths, 0)
+	wd := make([]models.WeeklyDeaths, 0)
 	for {
 		r, err := it.Next()
 		if err != nil {
@@ -62,7 +63,7 @@ func LoadWeeklyDeathsData(path string) error {
 
 		// there are some buggy records in Eurostat data (week 99)
 		if r.Week <= 53 {
-			wd = append(wd, WeeklyDeaths{
+			wd = append(wd, models.WeeklyDeaths{
 				Age:     r.Age,
 				Gender:  r.Gender,
 				Country: r.Country,

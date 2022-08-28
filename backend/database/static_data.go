@@ -1,7 +1,9 @@
 package database
 
-func Countries() []Country {
-	return []Country{
+import "eurostat-weekly-deaths/models"
+
+func Countries() []models.Country {
+	return []models.Country{
 		{"Andorra", "AD"},
 		{"Albania", "AL"},
 		{"Armenia", "AM"},
@@ -43,16 +45,16 @@ func Countries() []Country {
 	}
 }
 
-func Genders() []Gender {
-	return []Gender{
+func Genders() []models.Gender {
+	return []models.Gender{
 		{"Total", "T"},
 		{"Female", "F"},
 		{"Male", "M"},
 	}
 }
 
-func Ages() []Age {
-	return []Age{
+func Ages() []models.Age {
+	return []models.Age{
 		{"Total", "TOTAL"},
 		{"<5 years old", "Y_LT5"},
 		{"5-9 years old", "Y5-9"},

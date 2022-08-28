@@ -1,4 +1,4 @@
-package database
+package models
 
 type WeeklyDeaths struct {
 	Age     string `gorm:"index" json:"age"`
@@ -10,11 +10,11 @@ type WeeklyDeaths struct {
 }
 
 type WeeklyDeathsQueryParams struct {
-	Age      string   `form:"age"`
-	Gender   string   `form:"gender"`
-	Country  []string `form:"country"`
-	YearFrom int      `form:"year_from"`
-	YearTo   int      `form:"year_to""`
+	Age      string `form:"age"`
+	Gender   string `form:"gender"`
+	Country  string `form:"country"`
+	YearFrom int    `form:"year_from"`
+	YearTo   int    `form:"year_to""`
 }
 
 type Country struct {

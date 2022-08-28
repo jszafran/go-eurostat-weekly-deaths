@@ -2,6 +2,7 @@ package main
 
 import (
 	"eurostat-weekly-deaths/database"
+	"eurostat-weekly-deaths/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -29,7 +30,7 @@ func (e *Env) ListWeeklyDeaths(c *gin.Context) {
 		return
 	}
 
-	var params database.WeeklyDeathsQueryParams
+	var params models.WeeklyDeathsQueryParams
 	err := c.Bind(&params)
 	fmt.Printf("%+v\n", params)
 	if err != nil {
