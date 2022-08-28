@@ -59,14 +59,18 @@ func LoadWeeklyDeathsData(path string) error {
 			}
 			return err
 		}
-		wd = append(wd, WeeklyDeaths{
-			Age:     r.Age,
-			Gender:  r.Gender,
-			Country: r.Country,
-			Value:   r.WeeklyDeaths,
-			Week:    r.Week,
-			Year:    r.Year,
-		})
+
+		// there are some buggy records in Eurostat data (week 99)
+		if r.Week <= 53 {
+			wd = append(wd, WeeklyDeaths{
+				Age:     r.Age,
+				Gender:  r.Gender,
+				Country: r.Country,
+				Value:   r.WeeklyDeaths,
+				Week:    r.Week,
+				Year:    r.Year,
+			})
+		}
 	}
 	db.CreateInBatches(wd, 5000)
 	log.Printf("Inserted %d records in %s.\n", len(wd), time.Since(t1))

@@ -1,17 +1,5 @@
 package database
 
-import "gorm.io/gorm"
-
-type WeeklyDeathsDBModel struct {
-	gorm.Model
-	Age     string `gorm:"index" json:"age"`
-	Gender  string `gorm:"index" json:"gender"`
-	Country string `gorm:"index" json:"country"`
-	Value   int    `json:"value"`
-	Week    int    `gorm:"index" json:"week"`
-	Year    int    `gorm:"index" json:"year""`
-}
-
 type WeeklyDeaths struct {
 	Age     string `gorm:"index" json:"age"`
 	Gender  string `gorm:"index" json:"gender"`
