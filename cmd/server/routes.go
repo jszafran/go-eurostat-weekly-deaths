@@ -1,43 +1,27 @@
-package server
+package main
 
-func ListCountries() {
-	//AD
-	//AL
-	//AM
-	//AT
-	//BE
-	//BG
-	//CH
-	//CY
-	//CZ
-	//DE
-	//DK
-	//EE
-	//EL
-	//ES
-	//FI
-	//FR
-	//GE
-	//HR
-	//HU
-	//IE
-	//IS
-	//IT
-	//LI
-	//LT
-	//LU
-	//LV
-	//ME
-	//MT
-	//NL
-	//NO
-	//PL
-	//PT
-	//RO
-	//RS
-	//SE
-	//SI
-	//SK
-	//UK
+import (
+	"eurostat-weekly-deaths/db"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
+func ListCountries(c *gin.Context) {
+	c.JSON(http.StatusOK, db.Countries())
+}
+
+func ListGenders(c *gin.Context) {
+	c.JSON(http.StatusOK, db.Genders())
+}
+
+func ListAges(c *gin.Context) {
+	c.JSON(http.StatusOK, db.Ages())
+}
+
+func GetRouter() *gin.Engine {
+	r := gin.Default()
+	r.GET("/countries", ListCountries)
+	r.GET("/ages", ListAges)
+	r.GET("/genders", ListGenders)
+	return r
 }
