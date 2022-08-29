@@ -31,3 +31,8 @@ type Age struct {
 	Name string `json:"name"`
 	Code string `json:"code"`
 }
+
+type AvailableYears struct {
+	YearFrom int `json:"year_from"`
+	YearTo   int `json:"year_to"`
+}

@@ -1,16 +1,17 @@
 <template>
-  <div><p>Selected combination: {{ country }}; {{ gender }}; {{ age }}</p></div>
+  <div><p></p>
+  <p>{{ chartData }}</p>
+  </div>
 </template>
 
 <script>
 export default {
   name: "EurostatChart",
-  props: ['country', 'gender', 'age'],
+  props: ['chartData'],
   data: function() {
     return {
-      opts: Array("One", "Two", "Three")
     }
-  }
+  },
 }
 </script>
 

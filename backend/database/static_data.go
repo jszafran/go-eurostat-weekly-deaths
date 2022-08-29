@@ -47,7 +47,7 @@ func Countries() []models.Country {
 
 func Genders() []models.Gender {
 	return []models.Gender{
-		{"Total", "T"},
+		{"All", "T"},
 		{"Female", "F"},
 		{"Male", "M"},
 	}

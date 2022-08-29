@@ -30,33 +30,14 @@
           <v-col cols="3">
             <v-sheet rounded="lg">
               <v-list color="transparent">
-                <div style="padding: 7px"><v-autocomplete
-                    :items="countries"
-                    label="Country"
-                    item-text="name"
-                    v-model="country.value"
-                >
-
-                </v-autocomplete></div>
-                <div style="padding: 7px"><v-select
-                    :items="genders"
-                    label="Gender"
-                    item-text="name"
-                    v-model="gender.value"
-                ></v-select></div>
+                <ChartControls
+                    :countries="countries"
+                    :ages="ages"
+                    :genders="genders"
+                    :years="years"
+                ></ChartControls>
 
 
-                <v-divider class="my-2"></v-divider>
-                <v-list-item
-                    link
-                    color="grey lighten-4"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Refresh
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
               </v-list>
             </v-sheet>
           </v-col>
@@ -66,8 +47,13 @@
                 min-height="70vh"
                 rounded="lg"
             >
-              <EurostatChart :gender="gender.value" :country="country.value"></EurostatChart>
-              <!--  -->
+              <EurostatChart
+                  :gender="gender"
+                  :country="country"
+                  :age="age"
+                  :years="years"
+              ></EurostatChart>
+
             </v-sheet>
           </v-col>
         </v-row>
@@ -78,30 +64,64 @@
 
 <script>
 import EurostatChart from "@/components/EurostatChart";
-
+import ChartControls from "@/components/ChartControls";
 export default {
-  components: {EurostatChart},
+  components: {EurostatChart, ChartControls},
   data: () => ({
     links: [
       'Dashboard',
       'About',
-      'Fo'
     ],
-    country: {name: 'Poland', 'value': 'PL'},
-    gender: {name: 'All', 'value': 'TOTAL'},
-    countries: [
-      {'name': 'Poland', 'value': 'PL'},
-      {'name': 'Germany', 'value': 'DE'},
-      {'name': 'France', 'value': 'FR'}
-    ],
-    genders: [
-      {'name': 'All', 'value': 'TOTAL'},
-      {'name': 'Female', 'value': 'Female'},
-      {'name': 'Male', 'value': 'Male'}
-    ]
+    country: null,
+    gender: null,
+    age:  null,
+    countries: null,
+    genders: null,
+    ages: null,
+    years: null,
+    yearFrom: null,
+    yearTo: null,
+    chartDataUrl: null,
   }),
   methods: {
-    fetch
+    fetchDropdownValues: async function() {
+      const [genders, ages, countries, availableYears] = await Promise.all([
+          this.$http.get("/genders"),
+          this.$http.get("/ages"),
+          this.$http.get("/countries"),
+          this.$http.get("/available_years")
+      ])
+      return {
+        genders: genders.data,
+        ages: ages.data,
+        countries: countries.data,
+        yearFrom: availableYears.data.year_from,
+        yearTo: availableYears.data.year_to
+      }
+    },
+    fetchChartData: async function(country, age, gender, yearFrom, yearTo) {
+      const url = `/weekly_deaths?country=${country}&age=${age}&gender=${gender}&year_from=${yearFrom}&year_to=${yearTo}`
+      const resp = await this.$http.get(url)
+      return resp.data
+    }
+  },
+  created: async function() {
+    const data = await this.fetchDropdownValues()
+    this.genders = data.genders
+    this.countries = data.countries
+    this.ages = data.ages
+    this.country = data.countries[0].code
+    this.age = data.ages[0].code
+    this.gender = data.genders[0].code
+
+    const years = Array()
+    for (let i = data.yearFrom; i <= data.yearTo; i++) {
+      years.push({name: i, value: i})
+    }
+    this.years = years
+    this.yearFrom = years[0].value
+    this.yearTo = years[2].value
+    this.chartDataUrl = `/weekly_deaths?country=${this.country}&age=${this.age}&gender=${this.gender}&year_from=${this.yearFrom}&year_to=${this.yearTo}`
   }
 }
 </script>

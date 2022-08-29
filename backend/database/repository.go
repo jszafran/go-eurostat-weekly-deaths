@@ -33,3 +33,11 @@ func (r *EurostatRepository) FetchFirstN(n int) []models.WeeklyDeaths {
 
 	return res
 }
+
+func (r *EurostatRepository) GetAvailableYears() models.AvailableYears {
+	var res models.AvailableYears
+
+	r.Db.Raw("SELECT min(year) AS year_from, max(year) AS year_to FROM weekly_deaths;").Scan(&res)
+
+	return res
+}

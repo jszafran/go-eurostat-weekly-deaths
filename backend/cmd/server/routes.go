@@ -25,6 +25,10 @@ func (e *Env) ListAges(c *gin.Context) {
 	c.JSON(http.StatusOK, database.Ages())
 }
 
+func (e *Env) ListAvailableYears(c *gin.Context) {
+	c.JSON(http.StatusOK, e.repo.GetAvailableYears())
+}
+
 func (e *Env) ListWeeklyDeaths(c *gin.Context) {
 	if len(c.Request.URL.Query()) == 0 {
 		c.JSON(http.StatusOK, e.repo.FetchFirstN(20))
@@ -51,5 +55,6 @@ func GetRouter(repo *database.EurostatRepository) *gin.Engine {
 	r.GET("/ages", env.ListAges)
 	r.GET("/genders", env.ListGenders)
 	r.GET("/weekly_deaths", env.ListWeeklyDeaths)
+	r.GET("/available_years", env.ListAvailableYears)
 	return r
 }
