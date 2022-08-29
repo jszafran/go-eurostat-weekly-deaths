@@ -4,6 +4,7 @@ import (
 	"eurostat-weekly-deaths/database"
 	"eurostat-weekly-deaths/models"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -44,6 +45,7 @@ func (e *Env) ListWeeklyDeaths(c *gin.Context) {
 
 func GetRouter(repo *database.EurostatRepository) *gin.Engine {
 	r := gin.Default()
+	r.Use(cors.Default())
 	env := Env{repo}
 	r.GET("/countries", env.ListCountries)
 	r.GET("/ages", env.ListAges)
