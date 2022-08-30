@@ -30,12 +30,15 @@
           <v-col cols="3">
             <v-sheet rounded="lg">
               <v-list color="transparent">
-                <ChartControls
-                    :countries="countries"
-                    :ages="ages"
-                    :genders="genders"
-                    :years="years"
-                ></ChartControls>
+                <div v-if="dataLoaded">
+                  <ChartControls
+                      :countries="countries"
+                      :ages="ages"
+                      :genders="genders"
+                      :years="years"
+                  ></ChartControls>
+
+                </div>
 
 
               </v-list>
@@ -82,6 +85,7 @@ export default {
     yearFrom: null,
     yearTo: null,
     chartDataUrl: null,
+    dataLoaded: false
   }),
   methods: {
     fetchDropdownValues: async function() {
@@ -105,7 +109,7 @@ export default {
       return resp.data
     }
   },
-  created: async function() {
+  mounted: async function() {
     const data = await this.fetchDropdownValues()
     this.genders = data.genders
     this.countries = data.countries
@@ -119,9 +123,10 @@ export default {
       years.push({name: i, value: i})
     }
     this.years = years
-    this.yearFrom = years[0].value
-    this.yearTo = years[2].value
+    this.yearFrom = years[0].name
+    this.yearTo = years[2].name
     this.chartDataUrl = `/weekly_deaths?country=${this.country}&age=${this.age}&gender=${this.gender}&year_from=${this.yearFrom}&year_to=${this.yearTo}`
+    this.dataLoaded = true
   }
 }
 </script>

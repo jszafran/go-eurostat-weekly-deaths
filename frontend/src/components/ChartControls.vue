@@ -40,6 +40,7 @@
         v-model="yearTo"
     >
     </v-autocomplete></div>
+    <p>{{ age}} ; {{ country }} ; {{ gender }} ; {{ yearFrom }} ; {{ yearTo }}</p>
   </div>
 
 </template>
@@ -50,11 +51,11 @@ export default {
   props: ['countries', 'ages', 'genders', 'years'],
   data: function() {
     return {
-      country: this.countries[0],
-      age: this.ages[0],
-      gender: this.genders[0],
-      yearFrom: this.years[0],
-      yearTo: this.years[0]
+      country: this.countries[0].code,
+      age: this.ages[0].code,
+      gender: this.genders[0].code,
+      yearFrom: this.years[0].value,
+      yearTo: this.years[this.years.length-1].value,
     }
   },
 }
