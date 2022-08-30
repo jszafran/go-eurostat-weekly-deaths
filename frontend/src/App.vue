@@ -52,9 +52,12 @@
                 min-height="70vh"
                 rounded="lg"
             >
-              <EurostatChart
-                :chart-data="chartData"
-              ></EurostatChart>
+              <div v-if="dataLoaded">
+                <EurostatChart
+                    :chart-data="chartData"
+                ></EurostatChart>
+              </div>
+
 
             </v-sheet>
           </v-col>
@@ -107,7 +110,7 @@ export default {
       return resp.data
     },
     onInputChanged: async function(v) {
-      console.log(`Should fetch data for ${v}`)
+      this.chartData = await this.fetchChartDataForUrl(v.buildUrl())
     }
   },
   mounted: async function() {
@@ -129,6 +132,7 @@ export default {
         years[0].value,
         years[years.length - 1].value
     )
+    this.chartData = await this.fetchChartDataForUrl(this.chartControls.buildUrl())
     this.dataLoaded = true
   }
 }

@@ -40,7 +40,6 @@
         v-model="chartChoices.yearTo"
     >
     </v-autocomplete></div>
-    {{ chartChoices }}
   </div>
 
 </template>
@@ -58,11 +57,8 @@ export default {
   watch: {
     chartChoices:
         {
-          handler: function (newVal, oldVal) {
-            console.log('chart controls changed')
-            if (newVal !== oldVal) {
-              this.$emit('inputChanged', newVal)
-            }
+          handler(newVal) {
+            this.$emit('inputChanged', newVal)
           },
           deep: true
         }
