@@ -36,6 +36,7 @@
                       :ages="ages"
                       :genders="genders"
                       :years="years"
+                      :chart-control-choice="chartControls"
                       @inputChanged="onInputChanged"
                   ></ChartControls>
 
@@ -52,10 +53,7 @@
                 rounded="lg"
             >
               <EurostatChart
-                  :gender="gender"
-                  :country="country"
-                  :age="age"
-                  :years="years"
+                :chart-data="chartData"
               ></EurostatChart>
 
             </v-sheet>
@@ -69,6 +67,8 @@
 <script>
 import EurostatChart from "@/components/EurostatChart";
 import ChartControls from "@/components/ChartControls";
+import {ChartControlChoice} from "@/chart_choices.js"
+
 export default {
   components: {EurostatChart, ChartControls},
   data: () => ({
@@ -76,17 +76,15 @@ export default {
       'Dashboard',
       'About',
     ],
-    country: null,
-    gender: null,
-    age:  null,
     countries: null,
     genders: null,
     ages: null,
     years: null,
     yearFrom: null,
     yearTo: null,
-    chartDataUrl: null,
-    dataLoaded: false
+    dataLoaded: false,
+    chartData: null,
+    chartControls: null
   }),
   methods: {
     fetchDropdownValues: async function() {
@@ -117,18 +115,20 @@ export default {
     this.genders = data.genders
     this.countries = data.countries
     this.ages = data.ages
-    this.country = data.countries[0].code
-    this.age = data.ages[0].code
-    this.gender = data.genders[0].code
 
     const years = Array()
     for (let i = data.yearFrom; i <= data.yearTo; i++) {
       years.push({name: i, value: i})
     }
     this.years = years
-    this.yearFrom = years[0].name
-    this.yearTo = years[2].name
-    this.chartDataUrl = `/weekly_deaths?country=${this.country}&age=${this.age}&gender=${this.gender}&year_from=${this.yearFrom}&year_to=${this.yearTo}`
+
+    this.chartControls = new ChartControlChoice(
+        data.countries[0].code,
+        data.ages[0].code,
+        data.genders[0].code,
+        years[0].value,
+        years[years.length - 1].value
+    )
     this.dataLoaded = true
   }
 }

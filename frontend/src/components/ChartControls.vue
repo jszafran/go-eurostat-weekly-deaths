@@ -5,7 +5,7 @@
         label="Country"
         item-text="name"
         item-value="code"
-        v-model="country"
+        v-model="chartChoices.country"
     >
 
     </v-autocomplete></div>
@@ -14,7 +14,7 @@
         label="Gender"
         item-text="name"
         item-value="code"
-        v-model="gender"
+        v-model="chartChoices.gender"
     ></v-select></div>
 
     <div style="padding: 7px"><v-select
@@ -22,14 +22,14 @@
         label="Age"
         item-text="name"
         item-value="code"
-        v-model="age"
+        v-model="chartChoices.age"
     ></v-select></div>
 
     <div style="padding: 7px"><v-autocomplete
         :items="years"
         label="Year From"
         item-text="name"
-        v-model="yearFrom"
+        v-model="chartChoices.yearFrom"
     >
     </v-autocomplete></div>
 
@@ -37,9 +37,10 @@
         :items="years"
         label="Year To"
         item-text="name"
-        v-model="yearTo"
+        v-model="chartChoices.yearTo"
     >
     </v-autocomplete></div>
+    {{ chartChoices }}
   </div>
 
 </template>
@@ -47,28 +48,24 @@
 <script>
 export default {
   name: "ChartControls",
-  props: ['countries', 'ages', 'genders', 'years'],
+  props: ['countries', 'ages', 'genders', 'years', 'chartControlChoice'],
   emits: ['inputChanged'],
   data: function() {
     return {
-      country: this.countries[0].code,
-      age: this.ages[0].code,
-      gender: this.genders[0].code,
-      yearFrom: this.years[0].value,
-      yearTo: this.years[this.years.length-1].value,
-    }
-  },
-  computed: {
-    queryUrl: function() {
-      return `weekly_deaths?country=${this.country}&age=${this.age}&gender=${this.gender}&year_from=${this.yearFrom}&yearTo=${this.yearTo}`
+      chartChoices: this.chartControlChoice,
     }
   },
   watch: {
-    queryUrl: function(newVal, oldVal) {
-      if (newVal !== oldVal && newVal !== undefined) {
-        this.$emit('inputChanged', newVal)
-      }
+    chartChoices:
+        {
+          handler: function (newVal, oldVal) {
+            console.log('chart controls changed')
+            if (newVal !== oldVal) {
+              this.$emit('inputChanged', newVal)
+            }
+          },
+          deep: true
+        }
     }
-  }
 }
 </script>
