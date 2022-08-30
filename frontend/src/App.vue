@@ -36,6 +36,7 @@
                       :ages="ages"
                       :genders="genders"
                       :years="years"
+                      @inputChanged="onInputChanged"
                   ></ChartControls>
 
                 </div>
@@ -103,10 +104,12 @@ export default {
         yearTo: availableYears.data.year_to
       }
     },
-    fetchChartData: async function(country, age, gender, yearFrom, yearTo) {
-      const url = `/weekly_deaths?country=${country}&age=${age}&gender=${gender}&year_from=${yearFrom}&year_to=${yearTo}`
+    fetchChartDataForUrl: async function(url) {
       const resp = await this.$http.get(url)
       return resp.data
+    },
+    onInputChanged: async function(v) {
+      console.log(`Should fetch data for ${v}`)
     }
   },
   mounted: async function() {

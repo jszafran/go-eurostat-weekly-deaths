@@ -40,7 +40,6 @@
         v-model="yearTo"
     >
     </v-autocomplete></div>
-    <p>{{ age}} ; {{ country }} ; {{ gender }} ; {{ yearFrom }} ; {{ yearTo }}</p>
   </div>
 
 </template>
@@ -49,6 +48,7 @@
 export default {
   name: "ChartControls",
   props: ['countries', 'ages', 'genders', 'years'],
+  emits: ['inputChanged'],
   data: function() {
     return {
       country: this.countries[0].code,
@@ -58,5 +58,17 @@ export default {
       yearTo: this.years[this.years.length-1].value,
     }
   },
+  computed: {
+    queryUrl: function() {
+      return `weekly_deaths?country=${this.country}&age=${this.age}&gender=${this.gender}&year_from=${this.yearFrom}&yearTo=${this.yearTo}`
+    }
+  },
+  watch: {
+    queryUrl: function(newVal, oldVal) {
+      if (newVal !== oldVal && newVal !== undefined) {
+        this.$emit('inputChanged', newVal)
+      }
+    }
+  }
 }
 </script>
